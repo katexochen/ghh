@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"syscall"
 
+	"github.com/spf13/cobra"
 	"golang.org/x/term"
 )
 
@@ -16,37 +17,16 @@ const (
 	configFilePath = "ghh/settings.json"
 )
 
-type Settings struct {
-	Token string `json:"token"`
+func newSetAuthCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "set-auth",
+		Short: "Set the GitHub personal access token",
+		RunE:  SetupAuth,
+	}
+	return cmd
 }
 
-func GetToken() (string, error) {
-	token := os.Getenv(tokenEnvVar)
-	if token != "" {
-		return token, nil
-	}
-
-	configDir, err := os.UserConfigDir()
-	if err != nil {
-		return "", err
-	}
-
-	file, err := os.ReadFile(filepath.Join(configDir, configFilePath))
-	if errors.Is(err, os.ErrNotExist) {
-		return "", errors.New("no token found. Please set the GHH_TOKEN environment variable or run `ghh setauth`")
-	} else if err != nil {
-		return "", err
-	}
-
-	var settings Settings
-	if err := json.Unmarshal(file, &settings); err != nil {
-		return "", err
-	}
-
-	return settings.Token, nil
-}
-
-func SetupAuth() error {
+func SetupAuth(_ *cobra.Command, _ []string) error {
 	var token string
 
 	token = os.Getenv(tokenEnvVar)
@@ -91,4 +71,34 @@ func readTokenFromUserInput() (string, error) {
 	}
 
 	return string(byteToken), nil
+}
+
+type Settings struct {
+	Token string `json:"token"`
+}
+
+func GetToken() (string, error) {
+	token := os.Getenv(tokenEnvVar)
+	if token != "" {
+		return token, nil
+	}
+
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+
+	file, err := os.ReadFile(filepath.Join(configDir, configFilePath))
+	if errors.Is(err, os.ErrNotExist) {
+		return "", errors.New("no token found. Please set the GHH_TOKEN environment variable or run `ghh setauth`")
+	} else if err != nil {
+		return "", err
+	}
+
+	var settings Settings
+	if err := json.Unmarshal(file, &settings); err != nil {
+		return "", err
+	}
+
+	return settings.Token, nil
 }

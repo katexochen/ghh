@@ -1,14 +1,23 @@
 package main
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/google/go-github/v50/github"
 	"github.com/manifoldco/promptui"
+	"github.com/spf13/cobra"
 )
 
-func DeleteRuns(ctx context.Context) error {
+func newDeleteAllRunsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "delete-all-runs",
+		Short: "Delete all workflow runs",
+		RunE:  DeleteRuns,
+	}
+	return cmd
+}
+
+func DeleteRuns(cmd *cobra.Command, _ []string) error {
 	owner, repo, err := findOwnerAndRepo()
 	if err != nil {
 		return err
@@ -19,9 +28,9 @@ func DeleteRuns(ctx context.Context) error {
 		return err
 	}
 
-	c := newGithubClient(ctx, owner, repo, token)
+	c := newGithubClient(cmd.Context(), owner, repo, token)
 
-	workflows, err := c.GetWorkflows(ctx)
+	workflows, err := c.GetWorkflows(cmd.Context())
 	if err != nil {
 		return err
 	}
@@ -31,13 +40,13 @@ func DeleteRuns(ctx context.Context) error {
 		return err
 	}
 
-	runs, err := c.GetWorkflowRuns(ctx, workflow.GetID())
+	runs, err := c.GetWorkflowRuns(cmd.Context(), workflow.GetID())
 	if err != nil {
 		return err
 	}
 
 	fmt.Printf("Deleting %d runs...\n", len(runs))
-	if err := c.DeleteWorkflowRuns(ctx, runs); err != nil {
+	if err := c.DeleteWorkflowRuns(cmd.Context(), runs); err != nil {
 		return err
 	}
 

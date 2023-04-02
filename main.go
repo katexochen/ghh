@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"os/exec"
-	"strings"
+	"os/signal"
+
+	"github.com/spf13/cobra"
 )
 
 func main() {
@@ -16,35 +17,48 @@ func main() {
 }
 
 func run() error {
-	ctx := context.Background()
-
-	args := os.Args[1:]
-	if len(args) != 1 {
-		return fmt.Errorf("invalid number of arguments")
-	}
-
-	switch args[0] {
-	case "setauth":
-		return SetupAuth()
-	case "delete-all-runs":
-		return DeleteRuns(ctx)
-	default:
-		return fmt.Errorf("invalid command: %s", args[0])
-	}
+	cobra.EnableCommandSorting = false
+	rootCmd := newRootCmd()
+	ctx, cancel := signalContext(context.Background(), os.Interrupt)
+	defer cancel()
+	return rootCmd.ExecuteContext(ctx)
 }
 
-func findOwnerAndRepo() (string, string, error) {
-	cmd := exec.Command("git", "remote", "get-url", "origin")
-	remoteURL, err := cmd.Output()
-	if err != nil {
-		return "", "", err
+func newRootCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "ghh",
+		Short: "GitHub Helper CLI",
 	}
-	ownerRepo := strings.TrimSpace(string(remoteURL))
-	ownerRepo = strings.TrimPrefix(ownerRepo, "https://github.com/")
-	ownerRepo = strings.TrimSuffix(ownerRepo, ".git")
-	if strings.Count(ownerRepo, "/") != 1 {
-		return "", "", fmt.Errorf("invalid remote URL: %s", ownerRepo)
+	cmd.SetOut(os.Stdout)
+
+	cmd.AddCommand(
+		newDeleteAllRunsCmd(),
+		newCreateProjectIssueCmd(),
+		newSetAuthCmd(),
+	)
+
+	return cmd
+}
+
+func signalContext(ctx context.Context, sig os.Signal) (context.Context, context.CancelFunc) {
+	sigCtx, stop := signal.NotifyContext(ctx, sig)
+	done := make(chan struct{}, 1)
+	stopDone := make(chan struct{}, 1)
+
+	go func() {
+		defer func() { stopDone <- struct{}{} }()
+		defer stop()
+		select {
+		case <-sigCtx.Done():
+			fmt.Println(" Signal caught. Press ctrl+c again to terminate the program immediately.")
+		case <-done:
+		}
+	}()
+
+	cancelFunc := func() {
+		done <- struct{}{}
+		<-stopDone
 	}
-	owner, repo, _ := strings.Cut(ownerRepo, "/")
-	return owner, repo, nil
+
+	return sigCtx, cancelFunc
 }
