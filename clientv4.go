@@ -10,15 +10,16 @@ import (
 
 type GithubV4Client struct {
 	client *githubv4.Client
-	logger *Logger
+	logger Logger
 }
 
-func NewGithubV4Client(ctx context.Context, token string) *GithubV4Client {
+func NewGithubV4Client(ctx context.Context, token string, logger Logger) *GithubV4Client {
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token})
 	tc := oauth2.NewClient(ctx, ts)
 	client := githubv4.NewClient(tc)
 	return &GithubV4Client{
 		client: client,
+		logger: logger,
 	}
 }
 

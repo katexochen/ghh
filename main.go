@@ -29,13 +29,14 @@ func newRootCmd() *cobra.Command {
 		Use:   "ghh",
 		Short: "GitHub Helper CLI",
 	}
-	cmd.SetOut(os.Stdout)
 
+	cmd.SetOut(os.Stdout)
 	cmd.AddCommand(
 		newDeleteAllRunsCmd(),
 		newCreateProjectIssueCmd(),
 		newSetAuthCmd(),
 	)
+	cmd.PersistentFlags().BoolP("verbose", "v", false, "Enable verbose output")
 
 	return cmd
 }

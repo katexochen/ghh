@@ -35,12 +35,19 @@ func CreateProjectIssue(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
+	var logger Logger
+	if flags.verbose {
+		logger = &VerboseLogger{}
+	} else {
+		logger = &DefaultLogger{}
+	}
+
 	token, err := GetToken()
 	if err != nil {
 		return err
 	}
 
-	c := NewGithubV4Client(cmd.Context(), token)
+	c := NewGithubV4Client(cmd.Context(), token, logger)
 
 	project, err := c.QueryProject(cmd.Context(), flags.Metadata.Organization, flags.Metadata.ProjectNumber)
 	if err != nil {
@@ -82,6 +89,7 @@ func CreateProjectIssue(cmd *cobra.Command, _ []string) error {
 type CreateProjectIssueFlags struct {
 	Metadata Metadata
 	Body     string
+	verbose  bool
 }
 
 func parseCreateProjectIssueFlags(cmd *cobra.Command) (CreateProjectIssueFlags, error) {
@@ -107,9 +115,15 @@ func parseCreateProjectIssueFlags(cmd *cobra.Command) (CreateProjectIssueFlags, 
 		return CreateProjectIssueFlags{}, err
 	}
 
+	verbose, err := cmd.Flags().GetBool("verbose")
+	if err != nil {
+		return CreateProjectIssueFlags{}, err
+	}
+
 	return CreateProjectIssueFlags{
 		Metadata: metadata,
 		Body:     string(bodyBytes),
+		verbose:  verbose,
 	}, nil
 }
 
