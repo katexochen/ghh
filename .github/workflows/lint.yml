@@ -23,4 +23,4 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@08e2f20817b15149a52b5b3ebe7de50aff2ba8c5 # v3.4.0
 
-      - uses: katexochen/go-tidy-check@2f5d75dbd503b372466fa9d8bc85710558b953c7
+      - uses: katexochen/go-tidy-check@caaf0e8e9e2065961d3ff9cd3ef7062300759007
