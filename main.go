@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/katexochen/ghh/internal/cmd"
+
 	"github.com/spf13/cobra"
 )
 
@@ -25,20 +27,20 @@ func run() error {
 }
 
 func newRootCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	rootCmd := &cobra.Command{
 		Use:   "ghh",
 		Short: "GitHub Helper CLI",
 	}
 
-	cmd.SetOut(os.Stdout)
-	cmd.AddCommand(
-		newDeleteAllRunsCmd(),
-		newCreateProjectIssueCmd(),
-		newSetAuthCmd(),
+	rootCmd.SetOut(os.Stdout)
+	rootCmd.AddCommand(
+		cmd.NewDeleteAllRunsCmd(),
+		cmd.NewCreateProjectIssueCmd(),
+		cmd.NewSetAuthCmd(),
 	)
-	cmd.PersistentFlags().BoolP("verbose", "v", false, "Enable verbose output")
+	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Enable verbose output")
 
-	return cmd
+	return rootCmd
 }
 
 func signalContext(ctx context.Context, sig os.Signal) (context.Context, context.CancelFunc) {

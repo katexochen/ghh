@@ -1,26 +1,28 @@
-package main
+package cmd
 
 import (
 	"encoding/json"
 	"fmt"
 	"os"
 
+	"github.com/katexochen/ghh/internal/logger"
 	"github.com/shurcooL/githubv4"
 	"github.com/spf13/cobra"
 )
 
-func newCreateProjectIssueCmd() *cobra.Command {
+// NewCreateProjectIssueCmd creates a new command for creating a project issue.
+func NewCreateProjectIssueCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-project-issue",
 		Short: "Create a project issue",
-		RunE:  CreateProjectIssue,
+		RunE:  createProjectIssue,
 	}
 	cmd.Flags().String("metadata", "", "Path to metadata file")
 	cmd.Flags().String("body", "", "Path to body file")
 	return cmd
 }
 
-type Metadata struct {
+type metadata struct {
 	Organization  string
 	ProjectNumber int
 
@@ -29,25 +31,25 @@ type Metadata struct {
 	Fields     map[string]string
 }
 
-func CreateProjectIssue(cmd *cobra.Command, _ []string) error {
+func createProjectIssue(cmd *cobra.Command, _ []string) error {
 	flags, err := parseCreateProjectIssueFlags(cmd)
 	if err != nil {
 		return err
 	}
 
-	var logger Logger
+	var log loggerI
 	if flags.verbose {
-		logger = &VerboseLogger{}
+		log = &logger.VerboseLogger{}
 	} else {
-		logger = &DefaultLogger{}
+		log = &logger.DefaultLogger{}
 	}
 
-	token, err := GetToken()
+	token, err := getToken()
 	if err != nil {
 		return err
 	}
 
-	c := NewGithubV4Client(cmd.Context(), token, logger)
+	c := newGithubV4Client(cmd.Context(), token, log)
 
 	project, err := c.QueryProject(cmd.Context(), flags.Metadata.Organization, flags.Metadata.ProjectNumber)
 	if err != nil {
@@ -86,41 +88,41 @@ func CreateProjectIssue(cmd *cobra.Command, _ []string) error {
 	return nil
 }
 
-type CreateProjectIssueFlags struct {
-	Metadata Metadata
+type createProjectIssueFlags struct {
+	Metadata metadata
 	Body     string
 	verbose  bool
 }
 
-func parseCreateProjectIssueFlags(cmd *cobra.Command) (CreateProjectIssueFlags, error) {
+func parseCreateProjectIssueFlags(cmd *cobra.Command) (createProjectIssueFlags, error) {
 	metadataPath, err := cmd.Flags().GetString("metadata")
 	if err != nil {
-		return CreateProjectIssueFlags{}, err
+		return createProjectIssueFlags{}, err
 	}
 	metadataBytes, err := os.ReadFile(metadataPath)
 	if err != nil {
-		return CreateProjectIssueFlags{}, err
+		return createProjectIssueFlags{}, err
 	}
-	var metadata Metadata
+	var metadata metadata
 	if err := json.Unmarshal(metadataBytes, &metadata); err != nil {
-		return CreateProjectIssueFlags{}, err
+		return createProjectIssueFlags{}, err
 	}
 
 	bodyPath, err := cmd.Flags().GetString("body")
 	if err != nil {
-		return CreateProjectIssueFlags{}, err
+		return createProjectIssueFlags{}, err
 	}
 	bodyBytes, err := os.ReadFile(bodyPath)
 	if err != nil {
-		return CreateProjectIssueFlags{}, err
+		return createProjectIssueFlags{}, err
 	}
 
 	verbose, err := cmd.Flags().GetBool("verbose")
 	if err != nil {
-		return CreateProjectIssueFlags{}, err
+		return createProjectIssueFlags{}, err
 	}
 
-	return CreateProjectIssueFlags{
+	return createProjectIssueFlags{
 		Metadata: metadata,
 		Body:     string(bodyBytes),
 		verbose:  verbose,

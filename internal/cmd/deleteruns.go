@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -8,22 +8,23 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newDeleteAllRunsCmd() *cobra.Command {
+// NewDeleteAllRunsCmd creates a new command for deleting workflow runs.
+func NewDeleteAllRunsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "delete-all-runs",
 		Short: "Delete all workflow runs",
-		RunE:  DeleteRuns,
+		RunE:  deleteRuns,
 	}
 	return cmd
 }
 
-func DeleteRuns(cmd *cobra.Command, _ []string) error {
+func deleteRuns(cmd *cobra.Command, _ []string) error {
 	owner, repo, err := findOwnerAndRepo()
 	if err != nil {
 		return err
 	}
 
-	token, err := GetToken()
+	token, err := getToken()
 	if err != nil {
 		return err
 	}

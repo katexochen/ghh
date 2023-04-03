@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"encoding/json"
@@ -17,16 +17,17 @@ const (
 	configFilePath = "ghh/settings.json"
 )
 
-func newSetAuthCmd() *cobra.Command {
+// NewSetAuthCmd creates a new command for setting the GitHub personal access token.
+func NewSetAuthCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set-auth",
 		Short: "Set the GitHub personal access token",
-		RunE:  SetupAuth,
+		RunE:  setupAuth,
 	}
 	return cmd
 }
 
-func SetupAuth(_ *cobra.Command, _ []string) error {
+func setupAuth(_ *cobra.Command, _ []string) error {
 	var token string
 
 	token = os.Getenv(tokenEnvVar)
@@ -43,7 +44,7 @@ func SetupAuth(_ *cobra.Command, _ []string) error {
 		return err
 	}
 
-	settings := Settings{Token: token}
+	settings := settings{Token: token}
 
 	file, err := json.Marshal(settings)
 	if err != nil {
@@ -65,7 +66,7 @@ func SetupAuth(_ *cobra.Command, _ []string) error {
 func readTokenFromUserInput() (string, error) {
 	fmt.Println("Please enter your GitHub personal access token or restart auth with the GHH_TOKEN environment variable set.")
 	fmt.Print("Token: ")
-	byteToken, err := term.ReadPassword(int(syscall.Stdin))
+	byteToken, err := term.ReadPassword(syscall.Stdin)
 	if err != nil {
 		return "", err
 	}
@@ -73,11 +74,11 @@ func readTokenFromUserInput() (string, error) {
 	return string(byteToken), nil
 }
 
-type Settings struct {
+type settings struct {
 	Token string `json:"token"`
 }
 
-func GetToken() (string, error) {
+func getToken() (string, error) {
 	token := os.Getenv(tokenEnvVar)
 	if token != "" {
 		return token, nil
@@ -95,7 +96,7 @@ func GetToken() (string, error) {
 		return "", err
 	}
 
-	var settings Settings
+	var settings settings
 	if err := json.Unmarshal(file, &settings); err != nil {
 		return "", err
 	}

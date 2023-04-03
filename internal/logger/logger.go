@@ -1,4 +1,4 @@
-package main
+package logger
 
 import (
 	"encoding/json"
@@ -7,62 +7,64 @@ import (
 	"os"
 )
 
-type Logger interface {
-	Infof(format string, args ...any)
-	Infoln(args ...any)
-	Warnf(format string, args ...any)
-	Warnln(args ...any)
-	Errorf(format string, args ...any)
-	Errorln(args ...any)
-	Debugf(format string, args ...any)
-	Debugln(args ...any)
-	PrintJSON(msg string, v any)
-}
-
+// DefaultLogger is the default logger implementation.
 type DefaultLogger struct{}
 
+// Infof logs an info message.
 func (l *DefaultLogger) Infof(format string, args ...any) {
 	log.Printf(fmt.Sprintf("INFO: %s", format), args...)
 }
 
+// Infoln logs an info message.
 func (l *DefaultLogger) Infoln(args ...any) {
 	l.Infof("%s\n", args...)
 }
 
+// Warnf logs a warning message.
 func (l *DefaultLogger) Warnf(format string, args ...any) {
 	log.Printf(fmt.Sprintf("WARN: %s", format), args...)
 }
 
+// Warnln logs a warning message.
 func (l *DefaultLogger) Warnln(args ...any) {
 	l.Warnf("%s\n", args...)
 }
 
+// Errorf logs an error message.
 func (l *DefaultLogger) Errorf(format string, args ...any) {
 	log.Printf(fmt.Sprintf("ERROR: %s", format), args...)
 }
 
+// Errorln logs an error message.
 func (l *DefaultLogger) Errorln(args ...any) {
 	l.Errorf("%s\n", args...)
 }
 
-func (l *DefaultLogger) Debugf(format string, args ...any) {}
+// Debugf logs a debug message.
+func (l *DefaultLogger) Debugf(_ string, _ ...any) {}
 
-func (l *DefaultLogger) Debugln(args ...any) {}
+// Debugln logs a debug message.
+func (l *DefaultLogger) Debugln(_ ...any) {}
 
-func (l *DefaultLogger) PrintJSON(msg string, v any) {}
+// PrintJSON logs a JSON representation of v.
+func (l *DefaultLogger) PrintJSON(_ string, _ any) {}
 
+// VerboseLogger is a logger implementation that logs debug messages.
 type VerboseLogger struct {
 	DefaultLogger
 }
 
+// Debugf logs a debug message.
 func (l *VerboseLogger) Debugf(format string, args ...any) {
 	log.Printf(fmt.Sprintf("DEBUG: %s", format), args...)
 }
 
+// Debugln logs a debug message.
 func (l *VerboseLogger) Debugln(args ...any) {
 	l.Debugf("%s\n", args...)
 }
 
+// PrintJSON logs a JSON representation of v.
 func (l *VerboseLogger) PrintJSON(msg string, v any) {
 	l.Infoln(msg + ":")
 	w := json.NewEncoder(os.Stdout)

@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"context"
@@ -8,22 +8,22 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type GithubV4Client struct {
+type githubV4Client struct {
 	client *githubv4.Client
-	logger Logger
+	logger loggerI
 }
 
-func NewGithubV4Client(ctx context.Context, token string, logger Logger) *GithubV4Client {
+func newGithubV4Client(ctx context.Context, token string, logger loggerI) *githubV4Client {
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token})
 	tc := oauth2.NewClient(ctx, ts)
 	client := githubv4.NewClient(tc)
-	return &GithubV4Client{
+	return &githubV4Client{
 		client: client,
 		logger: logger,
 	}
 }
 
-func (c *GithubV4Client) QueryUser(ctx context.Context, username string) (*User, error) {
+func (c *githubV4Client) QueryUser(ctx context.Context, username string) (*User, error) {
 	var q struct {
 		User User `graphql:"user(login: $user)"`
 	}
@@ -39,7 +39,7 @@ func (c *GithubV4Client) QueryUser(ctx context.Context, username string) (*User,
 	return &q.User, nil
 }
 
-func (c *GithubV4Client) QueryProject(ctx context.Context, org string, projectNumber int) (*Project, error) {
+func (c *githubV4Client) QueryProject(ctx context.Context, org string, projectNumber int) (*Project, error) {
 	var q struct {
 		Organization struct {
 			ProjectV2 Project `graphql:"projectV2(number: $number)"`
@@ -58,7 +58,7 @@ func (c *GithubV4Client) QueryProject(ctx context.Context, org string, projectNu
 	return &q.Organization.ProjectV2, nil
 }
 
-func (c *GithubV4Client) AddProjectV2DraftIssue(ctx context.Context, input githubv4.AddProjectV2DraftIssueInput,
+func (c *githubV4Client) AddProjectV2DraftIssue(ctx context.Context, input githubv4.AddProjectV2DraftIssueInput,
 ) (ProjectItem, error) {
 	var m struct {
 		AddProjectV2DraftIssue struct {
@@ -69,7 +69,7 @@ func (c *GithubV4Client) AddProjectV2DraftIssue(ctx context.Context, input githu
 	return m.AddProjectV2DraftIssue.ProjectItem, c.client.Mutate(ctx, &m, input, nil)
 }
 
-func (c *GithubV4Client) UpdateProjectV2ItemFieldValueInput(ctx context.Context, project *Project,
+func (c *githubV4Client) UpdateProjectV2ItemFieldValueInput(ctx context.Context, project *Project,
 	itemID githubv4.ID, fieldValues map[string]string,
 ) error {
 	for fieldName, value := range fieldValues {
@@ -113,7 +113,7 @@ func (c *GithubV4Client) UpdateProjectV2ItemFieldValueInput(ctx context.Context,
 		c.logger.PrintJSON("update project fields input", input)
 		var m struct {
 			UpdateProjectV2ItemFieldValue struct {
-				ClientMutationId githubv4.String
+				ClientMutationID githubv4.String
 			} `graphql:"updateProjectV2ItemFieldValue(input: $input)"`
 		}
 
@@ -124,47 +124,4 @@ func (c *GithubV4Client) UpdateProjectV2ItemFieldValueInput(ctx context.Context,
 	}
 
 	return nil
-}
-
-type User struct {
-	ID githubv4.ID
-}
-
-type Project struct {
-	ID     githubv4.ID
-	Title  githubv4.String
-	Fields struct {
-		Nodes []ProjectField
-	} `graphql:"fields(first: 100)"`
-	URL githubv4.URI
-}
-
-type ProjectField struct {
-	Typename             githubv4.String `graphql:"__typename"`
-	ProjectV2FieldCommon `graphql:"... on ProjectV2FieldCommon"`
-	Iteration            struct {
-		Configuration struct {
-			Duration githubv4.Int
-			StartDay githubv4.Int
-		}
-	} `graphql:"... on ProjectV2IterationField"`
-	SingleSelect struct {
-		Options []FieldOption
-	} `graphql:"... on ProjectV2SingleSelectField"`
-}
-
-type ProjectV2FieldCommon struct {
-	ID       githubv4.ID
-	DataType githubv4.ProjectV2FieldType
-	Name     githubv4.String
-}
-
-type FieldOption struct {
-	ID   githubv4.String
-	Name githubv4.String
-}
-
-type ProjectItem struct {
-	ID         githubv4.ID
-	DatabaseID githubv4.Int
 }
