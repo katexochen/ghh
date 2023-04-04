@@ -6,7 +6,7 @@ require (
 	github.com/google/go-github/v50 v50.2.0
 	github.com/manifoldco/promptui v0.9.0
 	github.com/shurcooL/githubv4 v0.0.0-20230305132112-efb623903184
-	github.com/spf13/cobra v1.6.1
+	github.com/spf13/cobra v1.7.0
 	golang.org/x/oauth2 v0.6.0
 	golang.org/x/term v0.6.0
 )
