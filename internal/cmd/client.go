@@ -70,6 +70,8 @@ func (c *githubClient) DeleteWorkflowRuns(ctx context.Context, runs []*github.Wo
 	return nil
 }
 
+// getBranches returns all branches with the last commit being authored by the specified author.
+// Limit is the per-page limit for the GitHub API. (capped at 100)
 func (c *githubClient) GetBranches(ctx context.Context, author string, limit int) ([]*github.Branch, error) {
 	if limit > 100 {
 		// max limit as per https://docs.github.com/en/rest/branches/branches?apiVersion=2022-11-28

@@ -48,7 +48,7 @@ func listBranches(cmd *cobra.Command, _ []string) error {
 	}
 	log.PrintJSON("user", user)
 
-	branches, err := c.GetBranches(cmd.Context(), user.GetLogin(), 50)
+	branches, err := c.GetBranches(cmd.Context(), user.GetLogin(), 100)
 	if err != nil {
 		return fmt.Errorf("get branches: %w", err)
 	}
