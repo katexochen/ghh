@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/go-github/v50/github"
 	"golang.org/x/oauth2"
@@ -67,4 +68,52 @@ func (c *githubClient) DeleteWorkflowRuns(ctx context.Context, runs []*github.Wo
 		}
 	}
 	return nil
+}
+
+func (c *githubClient) GetBranches(ctx context.Context, author string, limit int) ([]*github.Branch, error) {
+	if limit > 100 {
+		// max limit as per https://docs.github.com/en/rest/branches/branches?apiVersion=2022-11-28
+		limit = 100
+	}
+
+	opt := &github.BranchListOptions{
+		Protected: github.Bool(false),
+		ListOptions: github.ListOptions{
+			PerPage: limit,
+		},
+	}
+
+	var allBranches []*github.Branch
+	for {
+		branches, resp, err := c.client.Repositories.ListBranches(ctx, c.owner, c.repo, opt)
+		if err != nil {
+			return nil, fmt.Errorf("list branches: %w", err)
+		}
+		allBranches = append(allBranches, branches...)
+		if resp.NextPage == 0 {
+			break
+		}
+		opt.Page = resp.NextPage
+	}
+
+	var filteredBranches []*github.Branch
+	for _, branch := range allBranches {
+		commit, _, err := c.client.Repositories.GetCommit(ctx, c.owner, c.repo, branch.GetCommit().GetSHA(), nil)
+		if err != nil {
+			return nil, fmt.Errorf("get commit: %w", err)
+		}
+		if commit.GetAuthor().GetLogin() == author {
+			filteredBranches = append(filteredBranches, branch)
+		}
+	}
+
+	return filteredBranches, nil
+}
+
+func (c *githubClient) GetUser(ctx context.Context) (*github.User, error) {
+	user, _, err := c.client.Users.Get(ctx, "")
+	if err != nil {
+		return nil, fmt.Errorf("get user: %w", err)
+	}
+	return user, nil
 }

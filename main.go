@@ -37,6 +37,7 @@ func newRootCmd() *cobra.Command {
 		cmd.NewDeleteAllRunsCmd(),
 		cmd.NewCreateProjectIssueCmd(),
 		cmd.NewSetAuthCmd(),
+		cmd.NewListBranchesCmd(),
 	)
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Enable verbose output")
 
