@@ -27,7 +27,7 @@ archives:
     builds_info:
       group: root
       owner: root
-      mode: 0644
+      mode: 0755
       mtime: 1970-01-01T00:00:00.000000001Z
     files:
       - LICENSE
