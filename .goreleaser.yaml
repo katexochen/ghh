@@ -12,7 +12,13 @@ builds:
   - env:
       - CGO_ENABLED=0
     flags: -trimpath
-    ldflags: -buildid=
+    ldflags:
+      - -s
+      - -w
+      - -buildid=
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
     goos:
       - linux
       - darwin
