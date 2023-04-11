@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/shurcooL/githubv4"
 	"golang.org/x/oauth2"
@@ -125,6 +126,10 @@ func (c *githubV4Client) UpdateProjectV2ItemFieldValueInput(ctx context.Context,
 			input.Value = githubv4.ProjectV2FieldValue{
 				Text: toPtr(githubv4.String(value)),
 			}
+		case githubv4.ProjectV2FieldTypeDate:
+			input.Value = githubv4.ProjectV2FieldValue{
+				Date: toPtr(githubv4.Date{Time: parseDate(value)}),
+			}
 		default:
 			return fmt.Errorf("unsupported field type %q", field.Typename)
 		}
@@ -143,4 +148,12 @@ func (c *githubV4Client) UpdateProjectV2ItemFieldValueInput(ctx context.Context,
 	}
 
 	return nil
+}
+
+func parseDate(s string) time.Time {
+	t, err := time.Parse(time.RFC3339, s)
+	if err != nil {
+		panic(err)
+	}
+	return t
 }
