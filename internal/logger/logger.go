@@ -67,10 +67,9 @@ func (l *VerboseLogger) Debugln(args ...any) {
 // PrintJSON logs a JSON representation of v.
 func (l *VerboseLogger) PrintJSON(msg string, v any) {
 	l.Infoln(msg + ":")
-	w := json.NewEncoder(os.Stdout)
+	w := json.NewEncoder(os.Stderr)
 	w.SetIndent("", "  ")
-	err := w.Encode(v)
-	if err != nil {
+	if err := w.Encode(v); err != nil {
 		panic(err)
 	}
 }
