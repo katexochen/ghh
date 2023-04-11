@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 
@@ -23,8 +24,8 @@ func NewCreateProjectIssueCmd() *cobra.Command {
 }
 
 type metadata struct {
-	Organization  string
-	ProjectNumber int
+	Organization  string // required
+	ProjectNumber int    // required
 
 	IssueTitle string
 	Assignees  []string
@@ -46,44 +47,52 @@ func createProjectIssue(cmd *cobra.Command, _ []string) error {
 
 	token, err := getToken()
 	if err != nil {
-		return err
+		return fmt.Errorf("getting token: %w", err)
 	}
 
 	c := newGithubV4Client(cmd.Context(), token, log)
 
+	c.logger.Debugf("searching project %s/%d", flags.Metadata.Organization, flags.Metadata.ProjectNumber)
 	project, err := c.QueryProject(cmd.Context(), flags.Metadata.Organization, flags.Metadata.ProjectNumber)
 	if err != nil {
-		return err
+		return fmt.Errorf("querying project: %w", err)
 	}
 	c.logger.PrintJSON("found project", project)
 
 	var assigneeIDs []githubv4.ID
 	for _, assignee := range flags.Metadata.Assignees {
+		c.logger.Debugf("searching user %s", assignee)
 		user, err := c.QueryUser(cmd.Context(), assignee)
 		if err != nil {
-			return err
+			return fmt.Errorf("querying user: %w", err)
 		}
 		c.logger.PrintJSON("found user", user)
 		assigneeIDs = append(assigneeIDs, user.ID)
 	}
 
 	addDraftIssueInput := githubv4.AddProjectV2DraftIssueInput{
-		ProjectID:   project.ID,
-		Title:       githubv4.String(flags.Metadata.IssueTitle),
-		Body:        toPtr(githubv4.String(flags.Body)),
-		AssigneeIDs: toPtr(assigneeIDs),
+		ProjectID: project.ID,
+		Title:     githubv4.String(flags.Metadata.IssueTitle),
 	}
+	if flags.Body != "" {
+		addDraftIssueInput.Body = toPtr(githubv4.String(flags.Body))
+	}
+	if len(flags.Metadata.Assignees) > 0 {
+		addDraftIssueInput.AssigneeIDs = toPtr(assigneeIDs)
+	}
+
 	item, err := c.AddProjectV2DraftIssue(cmd.Context(), addDraftIssueInput)
 	if err != nil {
-		return err
+		return fmt.Errorf("adding project issue: %w", err)
 	}
 
 	if err := c.UpdateProjectV2ItemFieldValueInput(cmd.Context(), project, item.ID, flags.Metadata.Fields); err != nil {
-		return err
+		return fmt.Errorf("updating project issue fields: %w", err)
 	}
 
 	itemURL := fmt.Sprintf("%s?pane=issue&itemId=%d", project.URL, item.DatabaseID)
-	c.logger.Infof("created project issue %s", itemURL)
+	c.logger.Infof("created project issue:")
+	fmt.Println(itemURL)
 
 	return nil
 }
@@ -107,14 +116,23 @@ func parseCreateProjectIssueFlags(cmd *cobra.Command) (createProjectIssueFlags, 
 	if err := json.Unmarshal(metadataBytes, &metadata); err != nil {
 		return createProjectIssueFlags{}, err
 	}
+	if metadata.Organization == "" {
+		return createProjectIssueFlags{}, errors.New("validating metadata fields: organization is required")
+	}
+	if metadata.ProjectNumber == 0 {
+		return createProjectIssueFlags{}, errors.New("validating metadata fields: project number is required")
+	}
 
 	bodyPath, err := cmd.Flags().GetString("body")
 	if err != nil {
 		return createProjectIssueFlags{}, err
 	}
-	bodyBytes, err := os.ReadFile(bodyPath)
-	if err != nil {
-		return createProjectIssueFlags{}, err
+	var bodyBytes []byte
+	if bodyPath != "" {
+		bodyBytes, err = os.ReadFile(bodyPath)
+		if err != nil {
+			return createProjectIssueFlags{}, err
+		}
 	}
 
 	verbose, err := cmd.Flags().GetBool("verbose")

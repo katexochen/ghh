@@ -28,8 +28,9 @@ func run() error {
 
 func newRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
-		Use:   "ghh",
-		Short: "GitHub Helper CLI",
+		Use:              "ghh",
+		Short:            "GitHub Helper CLI",
+		PersistentPreRun: preRunRoot,
 	}
 
 	rootCmd.SetOut(os.Stdout)
@@ -64,4 +65,8 @@ func signalContext(ctx context.Context, sig os.Signal) (context.Context, context
 	}
 
 	return sigCtx, cancelFunc
+}
+
+func preRunRoot(cmd *cobra.Command, _ []string) {
+	cmd.SilenceUsage = true
 }
