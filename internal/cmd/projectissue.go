@@ -91,7 +91,8 @@ func createProjectIssue(cmd *cobra.Command, _ []string) error {
 	}
 
 	itemURL := fmt.Sprintf("%s?pane=issue&itemId=%d", project.URL, item.DatabaseID)
-	c.logger.Infof("created project issue %s", itemURL)
+	c.logger.Infof("created project issue:")
+	fmt.Println(itemURL)
 
 	return nil
 }
