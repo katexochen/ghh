@@ -24,8 +24,11 @@ func NewCreateProjectIssueCmd() *cobra.Command {
 }
 
 type metadata struct {
-	Organization  string // required
-	ProjectNumber int    // required
+	Organization string // or User required
+	User         string // or Organization required
+	owner        string
+
+	ProjectNumber int // required
 
 	IssueTitle string
 	Assignees  []string
@@ -53,7 +56,8 @@ func createProjectIssue(cmd *cobra.Command, _ []string) error {
 	c := newGithubV4Client(cmd.Context(), token, log)
 
 	c.logger.Debugf("searching project %s/%d", flags.Metadata.Organization, flags.Metadata.ProjectNumber)
-	project, err := c.QueryProject(cmd.Context(), flags.Metadata.Organization, flags.Metadata.ProjectNumber)
+	isOrg := flags.Metadata.Organization != ""
+	project, err := c.QueryProject(cmd.Context(), flags.Metadata.owner, isOrg, flags.Metadata.ProjectNumber)
 	if err != nil {
 		return fmt.Errorf("querying project: %w", err)
 	}
@@ -116,9 +120,14 @@ func parseCreateProjectIssueFlags(cmd *cobra.Command) (createProjectIssueFlags, 
 	if err := json.Unmarshal(metadataBytes, &metadata); err != nil {
 		return createProjectIssueFlags{}, err
 	}
-	if metadata.Organization == "" {
-		return createProjectIssueFlags{}, errors.New("validating metadata fields: organization is required")
+	if metadata.Organization != "" {
+		metadata.owner = metadata.Organization
+	} else if metadata.User != "" {
+		metadata.owner = metadata.User
+	} else {
+		return createProjectIssueFlags{}, errors.New("validating metadata fields: organization or user is required")
 	}
+
 	if metadata.ProjectNumber == 0 {
 		return createProjectIssueFlags{}, errors.New("validating metadata fields: project number is required")
 	}

@@ -39,23 +39,42 @@ func (c *githubV4Client) QueryUser(ctx context.Context, username string) (*User,
 	return &q.User, nil
 }
 
-func (c *githubV4Client) QueryProject(ctx context.Context, org string, projectNumber int) (*Project, error) {
+func (c *githubV4Client) QueryProject(ctx context.Context, owner string, isOrg bool, projectNumber int) (*Project, error) {
+	if isOrg {
+		var q struct {
+			Organization struct {
+				ProjectV2 Project `graphql:"projectV2(number: $number)"`
+			} `graphql:"organization(login: $org)"`
+		}
+
+		variables := map[string]interface{}{
+			"number": githubv4.Int(projectNumber),
+			"org":    githubv4.String(owner),
+		}
+
+		if err := c.client.Query(ctx, &q, variables); err != nil {
+			return nil, err
+		}
+
+		return &q.Organization.ProjectV2, nil
+	}
+
 	var q struct {
-		Organization struct {
+		User struct {
 			ProjectV2 Project `graphql:"projectV2(number: $number)"`
-		} `graphql:"organization(login: $org)"`
+		} `graphql:"user(login: $user)"`
 	}
 
 	variables := map[string]interface{}{
 		"number": githubv4.Int(projectNumber),
-		"org":    githubv4.String(org),
+		"user":   githubv4.String(owner),
 	}
 
 	if err := c.client.Query(ctx, &q, variables); err != nil {
 		return nil, err
 	}
 
-	return &q.Organization.ProjectV2, nil
+	return &q.User.ProjectV2, nil
 }
 
 func (c *githubV4Client) AddProjectV2DraftIssue(ctx context.Context, input githubv4.AddProjectV2DraftIssueInput,

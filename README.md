@@ -11,7 +11,8 @@ and a path to a JSON document of metadata. The metadata file looks like this:
 
 ```json
 {
-    "organization": "<your org>",
+    "organization": "<org>",
+    "user": "<login>",
     "projectNumber": 42,
     "issueTitle": "<your issue title>",
     "assignees": [
@@ -24,6 +25,9 @@ and a path to a JSON document of metadata. The metadata file looks like this:
     }
 }
 ```
+
+Notice that either `organization` or `user`, and `projectNumber` as well
+as `issueTitle` are required fields.
 
 The project number is part of the URL of your target project board.
 
