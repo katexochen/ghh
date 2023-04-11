@@ -11,6 +11,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	version = "0.0.0-dev"
+	commit  = "HEAD"
+	date    = "unknown"
+)
+
 func main() {
 	if err := run(); err != nil {
 		fmt.Printf("Error: %s", err)
@@ -30,6 +36,7 @@ func newRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:              "ghh",
 		Short:            "GitHub Helper CLI",
+		Version:          version,
 		PersistentPreRun: preRunRoot,
 	}
 
@@ -40,6 +47,10 @@ func newRootCmd() *cobra.Command {
 		cmd.NewSetAuthCmd(),
 	)
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Enable verbose output")
+	rootCmd.InitDefaultVersionFlag()
+	rootCmd.SetVersionTemplate(
+		fmt.Sprintf("ghh - GitHub helper CLI\n\nversion   %s\ncommit    %s\nbuilt at  %s\n", version, commit, date),
+	)
 
 	return rootCmd
 }
