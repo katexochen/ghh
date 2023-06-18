@@ -37,3 +37,35 @@ For boards with columns, the column is also a field. You can find the
 field name and the possible values in your project settings.
 
 ![GitHub project settings](assets/project-settings.png)
+
+
+## `sync-forks`
+
+Sync all forks of a user with their upstream repository. It will
+fast-forward the fork if possible, otherwise it will merge the upstream branch.
+
+
+**Set merge target branches** using the `--target-branches` flag. Per default, the target of the merge is the default branch of the fork.
+You can pass multiple branch names, comma separated, or by using the flag multiple times. The existence of these
+branch names will be checked in order, and the first matching branch will be used as
+merge target. In case none of the branches matches, the default branch will be used.
+If you don't want to fall back to the default branch after no target branch matched,
+set the `--dont-target-default` flag.
+
+Example:
+
+```shell
+# Only sync branches called 'upstream' or 'sync', no fallback to default branch
+ghh sync-forks --target-branches upstream,sync --dont-target-default
+```
+
+**Ignored repos** you don't want to sync with the `--ignore-repos` flag.
+You can pass multiple repository names, comma separated, or by using the flag multiple times.
+Pass the repo name without your user prefix.
+
+Example:
+
+```shell
+# This won't update katexochen/ghh when executed by me.
+ghh sync-forks --ignore-repos ghh
+```

@@ -55,7 +55,7 @@ func setupAuth(_ *cobra.Command, _ []string) error {
 		return err
 	}
 
-	if err := os.WriteFile(filepath.Join(configDir, configFilePath), file, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(configDir, configFilePath), file, 0o600); err != nil {
 		return err
 	}
 
@@ -64,7 +64,7 @@ func setupAuth(_ *cobra.Command, _ []string) error {
 }
 
 func readTokenFromUserInput() (string, error) {
-	fmt.Println("Please enter your GitHub personal access token or restart auth with the GHH_TOKEN environment variable set.")
+	fmt.Println("Please enter your GitHub personal access token or restart -set-auth with the GHH_TOKEN environment variable set.")
 	fmt.Print("Token: ")
 	byteToken, err := term.ReadPassword(syscall.Stdin)
 	if err != nil {
