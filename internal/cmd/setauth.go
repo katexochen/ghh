@@ -55,7 +55,7 @@ func setupAuth(_ *cobra.Command, _ []string) error {
 		return err
 	}
 
-	if err := os.WriteFile(filepath.Join(configDir, configFilePath), file, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(configDir, configFilePath), file, 0o600); err != nil {
 		return err
 	}
 
