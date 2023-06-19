@@ -3,7 +3,7 @@ module github.com/katexochen/ghh
 go 1.20
 
 require (
-	github.com/google/go-github/v52 v52.0.0
+	github.com/google/go-github/v53 v53.1.0
 	github.com/manifoldco/promptui v0.9.0
 	github.com/shurcooL/githubv4 v0.0.0-20230424031643-6cea62ecd5a9
 	github.com/spf13/cobra v1.7.0
