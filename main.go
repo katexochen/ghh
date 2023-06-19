@@ -19,7 +19,6 @@ var (
 
 func main() {
 	if err := run(); err != nil {
-		fmt.Printf("Error: %s", err)
 		os.Exit(1)
 	}
 }
@@ -44,6 +43,7 @@ func newRootCmd() *cobra.Command {
 	rootCmd.AddCommand(
 		cmd.NewDeleteAllRunsCmd(),
 		cmd.NewCreateProjectIssueCmd(),
+		cmd.NewSyncForksCmd(),
 		cmd.NewSetAuthCmd(),
 	)
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Enable verbose output")
@@ -65,7 +65,7 @@ func signalContext(ctx context.Context, sig os.Signal) (context.Context, context
 		defer stop()
 		select {
 		case <-sigCtx.Done():
-			fmt.Println(" Signal caught. Press ctrl+c again to terminate the program immediately.")
+			fmt.Println(" Signal caught. Shutting down. Press ctrl+c again to terminate the program immediately.")
 		case <-done:
 		}
 	}()
