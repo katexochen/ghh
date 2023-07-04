@@ -82,7 +82,7 @@ func syncForks(cmd *cobra.Command, _ []string) error {
 	log.Debugf("%d remaining after filtering", len(forks))
 
 	var retErr error
-	var fastforwarded, merged, notbehind, skipped int
+	var fastforwarded, merged, notbehind, skipped, failed int
 	for _, fork := range forks {
 		var branch string
 		if !flags.dontTargetDefault {
@@ -113,6 +113,7 @@ func syncForks(cmd *cobra.Command, _ []string) error {
 		if err != nil {
 			log.Errorf("%s: syncing fork: %s", fork.GetFullName(), err)
 			retErr = errors.Join(retErr, fmt.Errorf("syncing fork %s: %w", fork.GetFullName(), err))
+			failed++
 			continue
 		}
 
@@ -129,10 +130,10 @@ func syncForks(cmd *cobra.Command, _ []string) error {
 	}
 
 	log.Infof(
-		"synced %d forks: %d fast-forwarded, %d merged, %d up-to-date, %d skipped",
-		len(forks), fastforwarded, merged, notbehind, skipped,
+		"synced %d forks: %d up-to-date, %d fast-forwarded, %d merged, %d skipped, %d failed",
+		len(forks), notbehind, fastforwarded, merged, skipped, failed,
 	)
-	return nil
+	return retErr
 }
 
 func filterIgnoredRepos(repos []*github.Repository, ignoreRepos []string) []*github.Repository {
