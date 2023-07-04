@@ -86,7 +86,7 @@ func syncForks(cmd *cobra.Command, _ []string) error {
 	for _, fork := range forks {
 		var branch string
 		if !flags.dontTargetDefault {
-			branch := fork.GetDefaultBranch()
+			branch = fork.GetDefaultBranch()
 			log.Debugf("%s: default branch is %s", fork.GetFullName(), branch)
 		}
 
