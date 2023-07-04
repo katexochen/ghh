@@ -91,10 +91,10 @@ func syncForks(cmd *cobra.Command, _ []string) error {
 		}
 
 		for _, targetBranch := range flags.targetBranches {
-			log.Debugf("%s: checking if branch %s exists", fork.GetFullName(), targetBranch)
+			log.Debugf("%s: checking if branch %q exists", fork.GetFullName(), targetBranch)
 			if _, err := c.GetBranch(cmd.Context(), fork, targetBranch); err == nil {
 				branch = targetBranch
-				log.Debugf("%s: using target branch %s", fork.GetFullName(), branch)
+				log.Debugf("%s: using target branch %q", fork.GetFullName(), branch)
 				break
 			}
 		}
@@ -105,7 +105,7 @@ func syncForks(cmd *cobra.Command, _ []string) error {
 			continue
 		}
 
-		log.Infof("%s: syncing fork branch %s with upstream", fork.GetFullName(), branch)
+		log.Infof("%s: syncing fork branch %q with upstream", fork.GetFullName(), branch)
 		result, err := c.SyncFork(cmd.Context(), fork, branch)
 		if errors.Is(err, context.Canceled) {
 			return err
