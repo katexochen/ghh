@@ -1,4 +1,4 @@
-name: int
+name: lint
 
 on:
   workflow_dispatch:

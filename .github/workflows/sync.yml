@@ -1,0 +1,28 @@
+name: Sync personal forks
+
+on:
+  schedule:
+    # Run every 3 hours from 6am UTC/8am CEST to 3pm UTC/5pm CEST on weekdays
+    - cron: '0 6-15/3 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Go environment
+        uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
+        with:
+          go-version: "stable"
+          cache: false # Caching doesn't work without a go.sum file.
+
+      - name: Install latest ghh release
+        run: |
+          go install github.com/katexochen/ghh@latest
+
+      - name: Sync personal forks
+        env:
+          # GHH_CI_TOKEN is a classic personal access token with repo and workflow scopes.
+          GHH_TOKEN: ${{ secrets.GHH_CI_TOKEN }}
+        run: |
+          ghh sync-forks --target-branches=upstream --verbose
