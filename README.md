@@ -59,13 +59,15 @@ Example:
 ghh sync-forks --target-branches upstream,sync --dont-target-default
 ```
 
-**Ignored repos** you don't want to sync with the `--ignore-repos` flag.
+**Ignore repos** you don't want to sync with the `--ignore-repos` flag.
 You can pass multiple repository names, comma separated, or by using the flag multiple times.
 Pass the repo name without your user prefix.
 
 Example:
 
 ```shell
-# This won't update katexochen/ghh when executed by me.
+# This won't sync katexochen/ghh when executed by me.
 ghh sync-forks --ignore-repos ghh
 ```
+**Run as GitHub workflow** to keep all your fork automatically up to date.
+You can easily copy [this example workflow](.github/workflows/sync.yml) and fit it to your needs.
