@@ -2,8 +2,8 @@ name: Sync personal forks
 
 on:
   schedule:
-    # Run every 3 hours from 6am UTC/8am CEST to 3pm UTC/5pm CEST on weekdays
-    - cron: '0 6-15/3 * * 1-5'
+    # Run every 3 hours from 6am UTC/8am CEST to 3pm UTC/5pm CEST
+    - cron: '0 6-15/3 * * *'
   workflow_dispatch:
 
 jobs:
