@@ -4,7 +4,7 @@ before:
   hooks:
     - go mod tidy
     - go generate ./...
-    - govulncheck -v ./...
+    - govulncheck ./...
     - actionlint
     - golangci-lint run
 
@@ -25,7 +25,6 @@ builds:
 
 archives:
   - format: tar.gz
-    rlcp: true
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     format_overrides:
       - goos: windows
