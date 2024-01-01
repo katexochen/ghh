@@ -35,8 +35,8 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/shurcooL/githubv4 v0.0.0-20231126234147-1cffa1f02456 h1:6dExqsYngGEiixqa1vmtlUd+zbyISilg0Cf3GWVdeYM=
 github.com/shurcooL/githubv4 v0.0.0-20231126234147-1cffa1f02456/go.mod h1:zqMwyHmnN/eDOZOdiTohqIUKUrTFX62PNlu7IJdu0q8=
-github.com/shurcooL/graphql v0.0.0-20230704054941-24ceaa0402e4 h1:mml6hFh5/R7RH7CjJd/F62o1tyA5CJmY7MK4ig4OhTw=
-github.com/shurcooL/graphql v0.0.0-20230704054941-24ceaa0402e4/go.mod h1:/uu2mVLKNJF2WV+6k3bWTZIWPh/NoxYCmevFXq2MvC0=
+github.com/shurcooL/graphql v0.0.0-20230722043721-ed46e5a46466 h1:17JxqqJY66GmZVHkmAsGEkcIu0oCe3AM420QDgGwZx0=
+github.com/shurcooL/graphql v0.0.0-20230722043721-ed46e5a46466/go.mod h1:9dIRpgIY7hVhoqfe0/FcYp0bpInZaT7dc3BYOprrIUE=
 github.com/spf13/cobra v1.7.0 h1:hyqWnYt1ZQShIddO5kBpj3vu05/++x6tJ6dg8EC572I=
 github.com/spf13/cobra v1.7.0/go.mod h1:uLxZILRyS/50WlhOIKD7W6V5bgeIt+4sICxh6uRMrb0=
 github.com/spf13/pflag v1.0.5 h1:iy+VFUOCP1a+8yFto/drg2CJ5u0yRoB7fZw3DKv/JXA=
