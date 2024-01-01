@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/google/go-github/v53 v53.2.0
 	github.com/manifoldco/promptui v0.9.0
-	github.com/shurcooL/githubv4 v0.0.0-20230704064427-599ae7bbf278
+	github.com/shurcooL/githubv4 v0.0.0-20231126234147-1cffa1f02456
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/oauth2 v0.9.0
