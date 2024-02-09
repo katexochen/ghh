@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/google/go-github/v53/github"
+	"github.com/google/go-github/v59/github"
 	"github.com/katexochen/ghh/internal/logger"
 	"github.com/spf13/cobra"
 )
