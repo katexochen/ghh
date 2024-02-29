@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/google/go-github/v53/github"
+	"github.com/google/go-github/v60/github"
 	"github.com/stretchr/testify/assert"
 )
 
