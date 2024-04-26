@@ -7,7 +7,7 @@ require (
 	github.com/manifoldco/promptui v0.9.0
 	github.com/shurcooL/githubv4 v0.0.0-20231126234147-1cffa1f02456
 	github.com/spf13/cobra v1.8.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	golang.org/x/oauth2 v0.15.0
 	golang.org/x/term v0.15.0
 )
