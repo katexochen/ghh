@@ -72,13 +72,12 @@ func (c *githubClient) DeleteWorkflowRuns(ctx context.Context, runs []*github.Wo
 }
 
 func (c *githubClient) GetUserRepositories(ctx context.Context) ([]*github.Repository, error) {
-	opt := &github.RepositoryListOptions{
-		Affiliation: "owner",
+	opt := &github.RepositoryListByUserOptions{
 		ListOptions: github.ListOptions{PerPage: 1000},
 	}
 	var allRepos []*github.Repository
 	for {
-		repos, resp, err := c.client.Repositories.List(ctx, "", opt)
+		repos, resp, err := c.client.Repositories.ListByUser(ctx, "", opt)
 		if err != nil {
 			return nil, err
 		}
@@ -136,7 +135,7 @@ func (c *githubClient) SyncFork(ctx context.Context, repo *github.Repository, br
 }
 
 func (c *githubClient) GetBranch(ctx context.Context, repo *github.Repository, branch string) (*github.Branch, error) {
-	result, resp, err := c.client.Repositories.GetBranch(ctx, repo.GetOwner().GetLogin(), repo.GetName(), branch, true)
+	result, resp, err := c.client.Repositories.GetBranch(ctx, repo.GetOwner().GetLogin(), repo.GetName(), branch, 10)
 	if err != nil {
 		return nil, fmt.Errorf("getting branch: %w", err)
 	}
