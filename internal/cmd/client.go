@@ -72,12 +72,13 @@ func (c *githubClient) DeleteWorkflowRuns(ctx context.Context, runs []*github.Wo
 }
 
 func (c *githubClient) GetUserRepositories(ctx context.Context) ([]*github.Repository, error) {
-	opt := &github.RepositoryListByUserOptions{
+	opt := &github.RepositoryListByAuthenticatedUserOptions{
+		Affiliation: "owner",
 		ListOptions: github.ListOptions{PerPage: 1000},
 	}
 	var allRepos []*github.Repository
 	for {
-		repos, resp, err := c.client.Repositories.ListByUser(ctx, "", opt)
+		repos, resp, err := c.client.Repositories.ListByAuthenticatedUser(ctx, opt)
 		if err != nil {
 			return nil, err
 		}
