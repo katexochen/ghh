@@ -1,5 +1,11 @@
 # ghh - GitHub Helper tool
 
+## Authentication
+
+Authentication against GitHub can be done by either setting `GHH_TOKEN` as environment
+variable on command invocation or by using the `set-auth` subcommand, which will read
+your token form the env or interactive input and write it to the GHH config file (unencrypted!).
+
 ## `create-project-issue`
 
 Create project issue creates a new draft issue in a GitHub
@@ -71,3 +77,17 @@ ghh sync-forks --ignore-repos ghh
 ```
 **Run as GitHub workflow** to keep all your fork automatically up to date.
 You can easily copy [this example workflow](.github/workflows/sync.yml) and fit it to your needs.
+
+
+## delete-all-runs
+
+Delete all runs of a workflow and get your workflows sidebar clean again. To run this command,
+within the repository, run the following command
+
+```sh
+ghh delete-all-runs
+```
+
+This will drop you into an interactive selection menu where you can select the workflow to delete.
+Notice that every run must be deleted on its own, and the command can take quite a while to finish
+(30-45 min if you have multiple thousand runs).
