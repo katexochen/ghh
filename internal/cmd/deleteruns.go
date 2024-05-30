@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/google/go-github/v61/github"
+	"github.com/google/go-github/v62/github"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 )
