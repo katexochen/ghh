@@ -2,7 +2,7 @@ module github.com/katexochen/ghh
 
 go 1.21
 
-toolchain go1.22.2
+toolchain go1.23.2
 
 require (
 	github.com/google/go-github/v61 v61.0.0
