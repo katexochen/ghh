@@ -7,7 +7,7 @@ toolchain go1.22.2
 require (
 	github.com/google/go-github/v61 v61.0.0
 	github.com/manifoldco/promptui v0.9.0
-	github.com/shurcooL/githubv4 v0.0.0-20240429030203-be2daab69064
+	github.com/shurcooL/githubv4 v0.0.0-20260209031235-2402fdf4a9ed
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/oauth2 v0.19.0
