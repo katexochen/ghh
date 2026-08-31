@@ -1,8 +1,6 @@
 module github.com/katexochen/ghh
 
-go 1.21
-
-toolchain go1.22.2
+go 1.23.0
 
 require (
 	github.com/google/go-github/v61 v61.0.0
@@ -10,7 +8,7 @@ require (
 	github.com/shurcooL/githubv4 v0.0.0-20240429030203-be2daab69064
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/oauth2 v0.19.0
+	golang.org/x/oauth2 v0.27.0
 	golang.org/x/term v0.19.0
 )
 
